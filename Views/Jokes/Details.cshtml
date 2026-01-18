@@ -28,7 +28,7 @@
 </div>
 <div>
     @if (User.Identity.IsAuthenticated &&
-        Model.CreatorId == UserManager.GetUserId(User))
+        (Model.CreatorId == UserManager.GetUserId(User) || User.IsInRole("Admin")))
     {
         <a asp-action="Edit" asp-route-id="@Model.id">Edit</a>
         <span> | </span>

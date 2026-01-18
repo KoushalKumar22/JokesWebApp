@@ -28,6 +28,10 @@ namespace JokesWebApp.Controllers
             _userManager = userManager;
         }
 
+        private bool IsUserAdmin()
+        {
+            return User.IsInRole("Admin");
+        }
 
         // GET: Jokes
         public async Task<IActionResult> Index()
@@ -109,7 +113,7 @@ namespace JokesWebApp.Controllers
             {
                 return NotFound();
             }
-            if(joke.CreatorId != _userManager.GetUserId(User))
+            if(joke.CreatorId != _userManager.GetUserId(User) && !IsUserAdmin())
             {
                 return Forbid();
             }
@@ -137,7 +141,7 @@ namespace JokesWebApp.Controllers
             if (existingJoke == null)
                 return NotFound();
 
-            if (existingJoke.CreatorId != _userManager.GetUserId(User))
+            if (existingJoke.CreatorId != _userManager.GetUserId(User) && !IsUserAdmin())
                 return Forbid();
 
 
@@ -168,7 +172,7 @@ namespace JokesWebApp.Controllers
                 return NotFound();
             }
 
-            if(joke.CreatorId != _userManager.GetUserId(User))
+            if(joke.CreatorId != _userManager.GetUserId(User) && !IsUserAdmin())
             {
                 return Forbid();
             }
@@ -190,7 +194,7 @@ namespace JokesWebApp.Controllers
                 return NotFound();
             }
 
-            if (joke.CreatorId != _userManager.GetUserId(User))
+            if (joke.CreatorId != _userManager.GetUserId(User) && !IsUserAdmin())
             {
                 return Forbid();
             }

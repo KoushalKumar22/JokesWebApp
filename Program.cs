@@ -4,20 +4,26 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Get connection string
+// Connection string
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
-// ✅ SQLite DbContext
+// DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString));
 
-// Identity
-builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+// Identity with Roles
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 {
-    options.SignIn.RequireConfirmedAccount = true;
+    options.SignIn.RequireConfirmedAccount = false;
 })
-.AddEntityFrameworkStores<ApplicationDbContext>();
+.AddEntityFrameworkStores<ApplicationDbContext>()
+.AddDefaultTokenProviders()
+.AddDefaultUI();
+
+
+// ✅ REQUIRED for Identity UI
+builder.Services.AddRazorPages();
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddControllersWithViews();
@@ -40,7 +46,6 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// ✅ REQUIRED FOR IDENTITY
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -49,5 +54,11 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapRazorPages();
+
+// Admin seeding
+using (var scope = app.Services.CreateScope())
+{
+    await SeedData.SeedAdminAsync(scope.ServiceProvider);
+}
 
 app.Run();

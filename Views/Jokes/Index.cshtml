@@ -36,7 +36,7 @@
                 <a asp-action="Details" asp-route-id="@item.id">Details</a>
 
                 @if (User.Identity.IsAuthenticated &&
-                item.CreatorId == UserManager.GetUserId(User))
+                (item.CreatorId == UserManager.GetUserId(User) || User.IsInRole("Admin")))
                 {
                     <span> | </span>
                     <a asp-action="Edit" asp-route-id="@item.id">Edit</a>
