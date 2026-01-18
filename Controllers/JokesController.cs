@@ -109,6 +109,12 @@ namespace JokesWebApp.Controllers
             {
                 return NotFound();
             }
+            if(joke.CreatorId != _userManager.GetUserId(User))
+            {
+                return Forbid();
+            }
+
+
             return View(joke);
         }
 
@@ -125,27 +131,25 @@ namespace JokesWebApp.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            //forbid if not the creator
+            var existingJoke = await _context.Joke.AsNoTracking()
+                .FirstOrDefaultAsync(j => j.id == id);
+            if (existingJoke == null)
+                return NotFound();
+
+            if (existingJoke.CreatorId != _userManager.GetUserId(User))
+                return Forbid();
+
+
+            if (!ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(joke);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!JokeExists(joke.id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                return View(joke);
             }
-            return View(joke);
+            existingJoke.JokeQuestion = joke.JokeQuestion;
+            existingJoke.JokeAnswer = joke.JokeAnswer;
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Jokes/Delete/5
@@ -164,6 +168,11 @@ namespace JokesWebApp.Controllers
                 return NotFound();
             }
 
+            if(joke.CreatorId != _userManager.GetUserId(User))
+            {
+                return Forbid();
+            }
+
             return View(joke);
         }
 
@@ -173,13 +182,21 @@ namespace JokesWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var joke = await _context.Joke.FindAsync(id);
-            if (joke != null)
+            var joke = await _context.Joke
+                .FirstOrDefaultAsync(j => j.id == id);
+
+            if (joke == null)
             {
-                _context.Joke.Remove(joke);
+                return NotFound();
             }
 
+            if (joke.CreatorId != _userManager.GetUserId(User))
+            {
+                return Forbid();
+            }
+            _context.Joke.Remove(joke);
             await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
 

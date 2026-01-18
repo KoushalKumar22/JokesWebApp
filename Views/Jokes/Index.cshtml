@@ -1,4 +1,7 @@
-﻿@model IEnumerable<JokesWebApp.Models.Joke>
+﻿@using Microsoft.AspNetCore.Identity
+@inject UserManager<IdentityUser> UserManager
+
+@model IEnumerable<JokesWebApp.Models.Joke>
 
 @{
     ViewData["Title"] = "Index";
@@ -29,9 +32,17 @@
                 @item.Creator?.Email
                 </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.id">Delete</a>
+                
+                <a asp-action="Details" asp-route-id="@item.id">Details</a>
+
+                @if (User.Identity.IsAuthenticated &&
+                item.CreatorId == UserManager.GetUserId(User))
+                {
+                    <span> | </span>
+                    <a asp-action="Edit" asp-route-id="@item.id">Edit</a>
+                    <span> | </span>
+                    <a asp-action="Delete" asp-route-id="@item.id">Delete</a>
+                }
             </td>
         </tr>
 }

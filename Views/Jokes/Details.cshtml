@@ -1,4 +1,6 @@
 ﻿@model JokesWebApp.Models.Joke
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<IdentityUser> UserManager
 
 @{
     ViewData["Title"] = "Details";
@@ -25,6 +27,11 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.id">Edit</a> |
+    @if (User.Identity.IsAuthenticated &&
+        Model.CreatorId == UserManager.GetUserId(User))
+    {
+        <a asp-action="Edit" asp-route-id="@Model.id">Edit</a>
+        <span> | </span>
+    }
     <a asp-action="Index">Back to List</a>
 </div>
