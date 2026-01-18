@@ -220,5 +220,15 @@ namespace JokesWebApp.Controllers
                 .ToListAsync();
             return View(myJokes);
         }
+
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AllJokesAdmin()
+        {
+            var allJokes = await _context.Joke
+                .Include(j => j.Creator)
+                .OrderByDescending(j => j.CreatedAt)
+                .ToListAsync();
+            return View(allJokes);
+        }
     }
 }

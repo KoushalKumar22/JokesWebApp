@@ -1,0 +1,51 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject UserManager<IdentityUser> UserManager
+
+@model IEnumerable<JokesWebApp.Models.Joke>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Admin - All Jokes</h1>
+
+<p class="text-danger"> Admin override enabled</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.JokeQuestion)
+            </th>
+            <th>Created By</th>
+            <th>Created On</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.JokeQuestion)
+                </td>
+                <td>
+                    @item.Creator?.Email
+                </td>
+                <td>@item.CreatedAt.ToLocalTime().ToString("dd MMM yyyy HH:mm")</td>
+                <td>
+
+                    <a asp-action="Details" asp-route-id="@item.id">Details</a>
+
+                    @if (User.Identity.IsAuthenticated &&
+                                    (item.CreatorId == UserManager.GetUserId(User) || User.IsInRole("Admin")))
+                    {
+                        <span> | </span>
+                        <a asp-action="Edit" asp-route-id="@item.id">Edit</a>
+                        <span> | </span>
+                        <a asp-action="Delete" asp-route-id="@item.id">Delete</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
