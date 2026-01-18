@@ -19,6 +19,7 @@
                 @Html.DisplayNameFor(model => model.JokeQuestion)
             </th>
             <th>Created By</th>
+            <th>Created On</th>
             <th></th>
         </tr>
     </thead>
@@ -30,7 +31,8 @@
             </td>
             <td>
                 @item.Creator?.Email
-                </td>
+            </td>
+            <td>@item.CreatedAt.ToLocalTime().ToString("dd MMM yyyy HH:mm")</td>
             <td>
                 
                 <a asp-action="Details" asp-route-id="@item.id">Details</a>

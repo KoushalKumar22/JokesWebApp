@@ -51,7 +51,7 @@ namespace JokesWebApp.Controllers
         // PoST: Jokes/ShowSearchResults
         public async Task<IActionResult> ShowSearchResults(String SearchPhrase)
         {
-            return View("Index", await _context.Joke.Where(j =>j.JokeQuestion.Contains
+            return View("Index", await _context.Joke.Where(j => j.JokeQuestion.Contains
             (SearchPhrase)).ToListAsync());
         }
 
@@ -113,7 +113,7 @@ namespace JokesWebApp.Controllers
             {
                 return NotFound();
             }
-            if(joke.CreatorId != _userManager.GetUserId(User) && !IsUserAdmin())
+            if (joke.CreatorId != _userManager.GetUserId(User) && !IsUserAdmin())
             {
                 return Forbid();
             }
@@ -172,7 +172,7 @@ namespace JokesWebApp.Controllers
                 return NotFound();
             }
 
-            if(joke.CreatorId != _userManager.GetUserId(User) && !IsUserAdmin())
+            if (joke.CreatorId != _userManager.GetUserId(User) && !IsUserAdmin())
             {
                 return Forbid();
             }
@@ -207,6 +207,18 @@ namespace JokesWebApp.Controllers
         private bool JokeExists(int id)
         {
             return _context.Joke.Any(e => e.id == id);
+        }
+
+        [Authorize]
+        public async Task<IActionResult> MyJokes()
+        {
+            var userId = _userManager.GetUserId(User);
+            var myJokes = await _context.Joke
+                .Where(j => j.CreatorId == userId)
+                .Include(j => j.Creator)
+                .OrderByDescending(j => j.CreatedAt)
+                .ToListAsync();
+            return View(myJokes);
         }
     }
 }
