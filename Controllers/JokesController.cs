@@ -51,8 +51,20 @@ namespace JokesWebApp.Controllers
         // PoST: Jokes/ShowSearchResults
         public async Task<IActionResult> ShowSearchResults(String SearchPhrase)
         {
-            return View("Index", await _context.Joke.Where(j => j.JokeQuestion.Contains
-            (SearchPhrase)).ToListAsync());
+            var query = _context.Joke
+                .Include(j => j.Creator)
+                .AsQueryable();
+
+            if(!string.IsNullOrWhiteSpace(SearchPhrase))
+                {
+                    query = query.Where(j => 
+                    j.JokeQuestion.Contains(SearchPhrase) ||
+                    j.JokeAnswer.Contains(SearchPhrase) ||
+                    j.Creator.Email.Contains(SearchPhrase)
+                    );
+                }
+            var results = await query.ToListAsync();
+            return View("Index", results);
         }
 
         // GET: Jokes/Details/5
