@@ -145,7 +145,7 @@ namespace JokesWebApp.Controllers
             {
                 return NotFound();
             }
-            if (joke.CreatorId != _userManager.GetUserId(User) && !IsUserAdmin())
+            if (joke.CreatorId != _userManager.GetUserId(User))
             {
                 return Forbid();
             }
@@ -168,21 +168,19 @@ namespace JokesWebApp.Controllers
             }
 
             //forbid if not the creator
-            var existingJoke = await _context.Joke.AsNoTracking()
+            var existingJoke = await _context.Joke
                 .FirstOrDefaultAsync(j => j.id == id);
             if (existingJoke == null)
                 return NotFound();
 
-            if (existingJoke.CreatorId != _userManager.GetUserId(User) && !IsUserAdmin())
+            if (existingJoke.CreatorId != _userManager.GetUserId(User))
                 return Forbid();
-
 
             if (!ModelState.IsValid)
             {
                 return View(joke);
             }
-            existingJoke.JokeQuestion = joke.JokeQuestion;
-            existingJoke.JokeAnswer = joke.JokeAnswer;
+            joke.CreatorId = existingJoke.CreatorId;
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

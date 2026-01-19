@@ -66,14 +66,14 @@
                 
                 <a asp-action="Details" asp-route-id="@item.id">Details</a>
 
-                @if (User.Identity.IsAuthenticated &&
-                (item.CreatorId == UserManager.GetUserId(User) || User.IsInRole("Admin")))
-                {
-                    <span> | </span>
-                    <a asp-action="Edit" asp-route-id="@item.id">Edit</a>
-                    <span> | </span>
-                    <a asp-action="Delete" asp-route-id="@item.id">Delete</a>
-                }
+            @if (User.CanEditJoke(item)){
+                <span> | </span>
+                <a asp-action="Edit" asp-route-id="@item.id">Edit</a>
+            }
+            @if (User.CanDeleteJoke(item)){
+                <span> | </span>
+                <a asp-action="Delete" asp-route-id="@item.id">Delete</a>
+            }
             </td>
         </tr>
 }
