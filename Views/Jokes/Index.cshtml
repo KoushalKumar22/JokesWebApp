@@ -3,11 +3,40 @@
 
 @model IEnumerable<JokesWebApp.Models.Joke>
 
+
 @{
     ViewData["Title"] = "Index";
+
+    bool isSearch = ViewData["IsSearch"] as bool? ?? false;
+    string searchPhrase = ViewData["SearchPhrase"] as string ?? "";
+    int resultCount = ViewData["ResultCount"] as int? ?? (Model?.Count() ?? 0);
 }
 
 <h1>Index</h1>
+
+    @if(isSearch){
+        if(resultCount == 0){
+            <div class="alert alert-warning">No jokes found for "
+                <strong>@searchPhrase</strong>"
+            </div>
+            <ul>
+                @if(!(ViewData["HasQuestionMatch"] as bool? ??false)){
+                    <li>No Jokes For This Question.</li>
+                }
+                @if(!(ViewData["HasAnswerMatch"] as bool? ??false)){
+                    <li>No jokes found with this answer.</li>
+                }
+                @if(!(ViewData["HasUserMatch"] as bool? ??false)){
+                    <li>No jokes found from this user.</li>
+                }
+            </ul>
+        }
+        else{
+            <div class="alert alert-info">Showing @resultCount result(s)
+                for "<strong>@searchPhrase</strong>"
+            </div>
+        }
+    }
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -24,7 +53,7 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+    @foreach (var item in Model) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.JokeQuestion)

@@ -10,10 +10,10 @@ namespace JokesWebApp.Models
         public int id { get; set; }
 
         [Required]
-        public string JokeQuestion { get; set; }
+        public string JokeQuestion { get; set; } = string.Empty;
 
         [Required]
-        public string JokeAnswer { get; set; }
+        public string JokeAnswer { get; set; } = string.Empty;
 
         // Ownership
         [ForeignKey("Creator")]

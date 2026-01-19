@@ -10,6 +10,8 @@ using JokesWebApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using System.Reflection.PortableExecutable;
+using System.ComponentModel.Design;
 
 namespace JokesWebApp.Controllers
 {
@@ -51,20 +53,38 @@ namespace JokesWebApp.Controllers
         // PoST: Jokes/ShowSearchResults
         public async Task<IActionResult> ShowSearchResults(String SearchPhrase)
         {
-            var query = _context.Joke
-                .Include(j => j.Creator)
-                .AsQueryable();
+            IQueryable<Joke> query = _context.Joke.Include
+            (j => j.Creator);
 
-            if(!string.IsNullOrWhiteSpace(SearchPhrase))
-                {
-                    query = query.Where(j => 
-                    j.JokeQuestion.Contains(SearchPhrase) ||
-                    j.JokeAnswer.Contains(SearchPhrase) ||
-                    j.Creator.Email.Contains(SearchPhrase)
-                    );
-                }
-            var results = await query.ToListAsync();
-            return View("Index", results);
+            bool isSearch = ! string.IsNullOrWhiteSpace(SearchPhrase);
+
+            if (isSearch)
+            {
+                query = query.Where(j => 
+                j.JokeQuestion.Contains(SearchPhrase) ||
+                j.JokeAnswer.Contains(SearchPhrase) ||
+                (j.Creator != null && j.Creator.Email.Contains(SearchPhrase)));
+            }
+
+            var results = await query
+            .ToListAsync();
+
+            //view State
+            ViewData["IsSearch"] = true;
+            ViewData["SearchPhrase"] = SearchPhrase;
+            ViewData["ResultCount"] = results.Count;
+
+            ViewData["HasQuestionMatch"] = results.Any(j=> 
+                j.JokeQuestion.Contains(SearchPhrase));
+
+            ViewData["HasAnswerMatch"] = results.Any(j=> 
+                j.JokeAnswer.Contains(SearchPhrase));
+                    
+            ViewData["HasUserMatch"] = results.Any(j=> 
+                j.Creator != null && 
+                j.Creator.Email.Contains(SearchPhrase));
+
+                return View("Index", results);
         }
 
         // GET: Jokes/Details/5
