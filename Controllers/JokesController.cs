@@ -180,7 +180,9 @@ namespace JokesWebApp.Controllers
             {
                 return View(joke);
             }
-            joke.CreatorId = existingJoke.CreatorId;
+            existingJoke.JokeQuestion = joke.JokeQuestion;
+            existingJoke.JokeAnswer = joke.JokeAnswer;
+            // joke.CreatorId = existingJoke.CreatorId;
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
