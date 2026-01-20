@@ -16,6 +16,7 @@ namespace JokesWebApp.Data
                 await roleManager.CreateAsync(new IdentityRole("Admin"));
             }
 
+            
             //Assign admin role to a user
             var adminUser = await userManager.FindByEmailAsync("joushal@jokes.com");
             if (adminUser != null && !await userManager.IsInRoleAsync(adminUser, "Admin"))
