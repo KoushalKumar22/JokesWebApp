@@ -10,7 +10,12 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 // DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection")
+    )
+);
+    
 
 // Identity with Roles
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
