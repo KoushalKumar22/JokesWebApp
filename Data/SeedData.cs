@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using SQLitePCL;
 
 namespace JokesWebApp.Data
 {
@@ -7,19 +9,51 @@ namespace JokesWebApp.Data
 
         public static async Task SeedAdminAsync(IServiceProvider services)
         {
+            
             var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
             var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
 
-            //Create Admin Role
-            if (!await roleManager.RoleExistsAsync("Admin"))
-            {
-                await roleManager.CreateAsync(new IdentityRole("Admin"));
-            }
+            string[] roles = {"Admin", "User"};
 
+            foreach(var role in roles)
+            {
+                //Create Admin Role
+                if (!await roleManager.RoleExistsAsync(role))
+                {
+                    await roleManager.CreateAsync(new IdentityRole(role));
+                }
+            }
             
-            //Assign admin role to a user
-            var adminUser = await userManager.FindByEmailAsync("joushal@jokes.com");
-            if (adminUser != null && !await userManager.IsInRoleAsync(adminUser, "Admin"))
+            // ensure admin user
+            var addEmail = "joushal@jokes.com";
+            var adminPassword = "Admin@123";
+
+            var adminUser = await userManager.Users.FirstOrDefaultAsync(
+                u => u.Email == addEmail);
+
+            Console.WriteLine($"ADMIN USER EXIST: {adminUser != null}");
+            Console.WriteLine($"ADMIN ID: {adminUser?.Id}");
+
+            if(adminUser == null)
+            {
+                adminUser = new IdentityUser
+                {
+                    UserName = addEmail,
+                    Email = addEmail,
+                    EmailConfirmed = true
+                };
+
+                var result =await userManager.CreateAsync(adminUser, adminPassword);
+
+                if(!result.Succeeded)
+                {
+                    throw new Exception("Failed to create admin user: " +
+                    string.Join(", ", result.Errors.Select(e => e.Description))
+                    );
+                }
+            }
+            // Assign admin user to Admin role
+            if(!await userManager.IsInRoleAsync(adminUser, "Admin"))
             {
                 await userManager.AddToRoleAsync(adminUser, "Admin");
             }

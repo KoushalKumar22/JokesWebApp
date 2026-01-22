@@ -84,9 +84,18 @@ app.MapControllerRoute(
 app.MapRazorPages();
 
 // Admin seeding
-using (var scope = app.Services.CreateScope())
+using var scope = app.Services.CreateScope();
+
+await SeedData.SeedAdminAsync(scope.ServiceProvider);
+
+if(app.Environment.IsDevelopment())
 {
-    await SeedData.SeedAdminAsync(scope.ServiceProvider);
+    app.UseMigrationsEndPoint();
+}
+else
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
 }
 
 app.Run();
