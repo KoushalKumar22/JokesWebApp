@@ -162,10 +162,10 @@ namespace JokesWebApp.Migrations
                 {
                     id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    JokeQuestion = table.Column<string>(type: "TEXT", nullable: false),
-                    JokeAnswer = table.Column<string>(type: "TEXT", nullable: false),
-                    CreatorId = table.Column<string>(type: "TEXT", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    JokeQuestion = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
+                    JokeAnswer = table.Column<string>(type: "TEXT", maxLength: 500, nullable: false),
+                    CreatorId = table.Column<string>(type: "TEXT", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
                 constraints: table =>
                 {
@@ -174,7 +174,8 @@ namespace JokesWebApp.Migrations
                         name: "FK_Joke_AspNetUsers_CreatorId",
                         column: x => x.CreatorId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -213,6 +214,11 @@ namespace JokesWebApp.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Joke_CreatedAt",
+                table: "Joke",
+                column: "CreatedAt");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Joke_CreatorId",

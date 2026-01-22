@@ -24,20 +24,27 @@ namespace JokesWebApp.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("TEXT");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<string>("CreatorId")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("JokeAnswer")
                         .IsRequired()
+                        .HasMaxLength(500)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("JokeQuestion")
                         .IsRequired()
+                        .HasMaxLength(200)
                         .HasColumnType("TEXT");
 
                     b.HasKey("id");
+
+                    b.HasIndex("CreatedAt");
 
                     b.HasIndex("CreatorId");
 
@@ -240,7 +247,9 @@ namespace JokesWebApp.Migrations
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Creator")
                         .WithMany()
-                        .HasForeignKey("CreatorId");
+                        .HasForeignKey("CreatorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Creator");
                 });

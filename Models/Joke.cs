@@ -7,22 +7,22 @@ namespace JokesWebApp.Models
 {
     public class Joke
     {
+        [Key]
         public int id { get; set; }
 
-        [Required]
+        [Required, StringLength(200)]
         public string JokeQuestion { get; set; } = string.Empty;
 
-        [Required]
+        [Required, StringLength(500)]
         public string JokeAnswer { get; set; } = string.Empty;
 
         // Ownership
-        [ForeignKey("Creator")]
-        public string? CreatorId { get; set; }
+        [Required]
+        public string CreatorId { get; set; } = default!;
 
-        [ValidateNever]
-        public IdentityUser? Creator { get; set; }
+        public IdentityUser Creator { get; set; } = default!;
 
         //New: TimeStamp
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; }
     }
 }

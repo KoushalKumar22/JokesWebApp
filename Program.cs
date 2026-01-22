@@ -84,9 +84,16 @@ app.MapControllerRoute(
 app.MapRazorPages();
 
 // Admin seeding
-using var scope = app.Services.CreateScope();
+try
+{
+    using var scope = app.Services.CreateScope();
 
-await SeedData.SeedAdminAsync(scope.ServiceProvider);
+    await SeedData.SeedAdminAsync(scope.ServiceProvider);
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"SEED WARNING: {ex.Message}");
+}
 
 if(app.Environment.IsDevelopment())
 {
