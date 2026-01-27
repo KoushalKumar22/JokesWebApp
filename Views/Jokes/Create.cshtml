@@ -1,13 +1,9 @@
 ﻿@model JokesWebApp.Models.Joke
-
 <div asp-validation-summary = "All" class="text-danger"></div>
-
 @{
     ViewData["Title"] = "Create";
 }
-
 <h1>Create</h1>
-
 <h4>Joke</h4>
 <hr />
 <div class="row">
@@ -30,11 +26,9 @@
         </form>
     </div>
 </div>
-
 <div class="mt-2">
     <a asp-action="Index">Back to List</a>
 </div>
-
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

@@ -17,7 +17,7 @@ else
 {
     Console.WriteLine("DB PROVIDER: (Azure)");
 }
-Console.WriteLine($"DB CONNECTION: {connectionString}");
+Console.WriteLine($"DB CONNECTION: {connectionString}");//delete this line in production
 
 // DbContext
 

@@ -118,17 +118,20 @@ namespace JokesWebApp.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("id,JokeQuestion,JokeAnswer")] Joke joke)
+        public async Task<IActionResult> Create([Bind("JokeQuestion,JokeAnswer")] Joke joke)
         {
-            if (ModelState.IsValid)
+
+            joke.CreatorId = _userManager.GetUserId(User)!;
+            joke.CreatedAt = DateTime.UtcNow;
+
+            if(!ModelState.IsValid)
             {
-                joke.CreatorId = _userManager.GetUserId(User);
-                _context.Add(joke);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return View(joke);
             }
 
-            return View(joke);
+            _context.Joke.Add(joke);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Jokes/Edit/5
@@ -261,6 +264,11 @@ namespace JokesWebApp.Controllers
                 .OrderByDescending(j => j.CreatedAt)
                 .ToListAsync();
             return View(allJokes);
+        }
+        
+        public IActionResult Error()
+        {
+            return View();
         }
     }
 }
